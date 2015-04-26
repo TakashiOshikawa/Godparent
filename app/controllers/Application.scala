@@ -14,7 +14,8 @@ object Application extends Controller {
          List(
            Map("name" -> Json.toJson("Gerrard"),   "number" -> Json.toJson(8),  "age" -> Json.toJson(34)),
            Map("name" -> Json.toJson("Henderson"), "number" -> Json.toJson(14), "age" -> Json.toJson(25)),
-           Map("name" -> Json.toJson("Skrtel"),    "number" -> Json.toJson(37), "age" -> Json.toJson(31))
+           Map("name" -> Json.toJson("Skrtel"),    "number" -> Json.toJson(37), "age" -> Json.toJson(31)),
+           Map("name" -> Json.toJson("Sakho"),     "number" -> Json.toJson(17), "age" -> Json.toJson(24))
          )
       )
 
