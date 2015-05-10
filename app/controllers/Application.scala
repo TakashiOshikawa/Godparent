@@ -8,10 +8,12 @@ import play.api.libs.json
 import play.api.data._
 import play.api.data.Forms._
 import java.io.PrintWriter
+import anorm._
+import anorm.SqlParser._
+import play.api.db.DB
+import play.api.Play.current
 
 object Application extends Controller {
-
-
 
   //データをJsonで返す
   def index = Action {
@@ -43,26 +45,36 @@ object Application extends Controller {
 
   //Listでデータを宣言しAngular側で取得する
   def initTasks = Action {
-    //表示用初期データ
-    val tasks = Json.toJson(
-      List(
-        Map("body" -> Json.toJson("First Task"),  "doen" -> Json.toJson(false), "num" -> Json.toJson(0)),
-        Map("body" -> Json.toJson("Second Task"), "doen" -> Json.toJson(false), "num" -> Json.toJson(1)),
-        Map("body" -> Json.toJson("Third Task"),  "doen" -> Json.toJson(false), "num" -> Json.toJson(2))
-      )
-    )
 
-    Ok( tasks ).withHeaders("Access-Control-Allow-Origin" -> " *")
+    //DB接続
+    DB.withConnection { implicit conn =>
+      //DB接続が出来ているかの確認
+      // val result: Boolean = SQL("Select 1").execute()
+
+      val task = SQL("SELECT * FROM task")
+      val data = task().map(row =>
+        Map( "id" -> Json.toJson(row[Int]("id")),
+             "body" -> Json.toJson(row[String]("body")),
+             "doen" -> Json.toJson(row[String]("doen")),
+             "num" -> Json.toJson(row[Int]("num"))
+        )
+      ).toList
+
+
+      //表示用初期データ
+//      val tasks = Json.toJson(
+//        List(
+//          Map("body" -> Json.toJson("First Task"), "doen" -> Json.toJson(false), "num" -> Json.toJson(0)),
+//          Map("body" -> Json.toJson("Second Task"), "doen" -> Json.toJson(false), "num" -> Json.toJson(1)),
+//          Map("body" -> Json.toJson("Third Task"), "doen" -> Json.toJson(false), "num" -> Json.toJson(2))
+//        )
+//      )
+
+      val tasks = Json.toJson( data )
+
+      Ok(tasks).withHeaders("Access-Control-Allow-Origin" -> " *")
+    }
   }
-
-
-
-  //ファイルでデータのやりとりをする
-//  def fileDatas = Action {
-//    val out = new PrintWriter(fileName)
-//    stringList.foreach(out.println(_))
-//    out.close
-//  }
 
 
 
